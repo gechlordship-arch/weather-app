@@ -16,17 +16,100 @@
       align-items: center;
       justify-content: center;
       padding: 20px;
-      transition: background 0.6s;
+      transition: background 0.8s ease;
+      overflow-x: hidden;
     }
+
+    /* ============ BACKGROUND LAYER ============ */
+    #bg-layer {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+    #particles {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+    #clouds, #stars {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+    }
+    #stars { display: none; }
+    #stars.show { display: block; }
+
+    .star {
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      background: white;
+      border-radius: 50%;
+      animation: twinkle 3s ease-in-out infinite;
+      box-shadow: 0 0 4px rgba(255,255,255,0.7);
+    }
+    @keyframes twinkle {
+      0%, 100% { opacity: 0.25; transform: scale(0.9); }
+      50% { opacity: 1; transform: scale(1.15); }
+    }
+
+    .cloud {
+      position: absolute;
+      background: radial-gradient(ellipse at center,
+        rgba(255,255,255,0.85) 0%,
+        rgba(255,255,255,0.45) 40%,
+        rgba(255,255,255,0.15) 65%,
+        transparent 80%);
+      border-radius: 50%;
+      animation: cloudDrift linear infinite;
+      filter: blur(1.5px);
+      will-change: left;
+    }
+    @keyframes cloudDrift {
+      from { left: -30%; }
+      to   { left: 115%; }
+    }
+
+    #sun-glow {
+      position: absolute;
+      top: 6%;
+      right: 8%;
+      width: 260px;
+      height: 260px;
+      border-radius: 50%;
+      background: radial-gradient(circle,
+        rgba(255,235,150,0.7) 0%,
+        rgba(255,200,100,0.35) 30%,
+        transparent 70%);
+      opacity: 0;
+      transition: opacity 1s ease;
+      filter: blur(8px);
+    }
+    #sun-glow.show {
+      opacity: 1;
+      animation: sunPulse 7s ease-in-out infinite;
+    }
+    @keyframes sunPulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.15); }
+    }
+
+    /* ============ CARD ============ */
     .card {
-      background: rgba(255,255,255,0.12);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
+      position: relative;
+      z-index: 1;
+      background: rgba(255,255,255,0.13);
+      backdrop-filter: blur(22px);
+      -webkit-backdrop-filter: blur(22px);
       border-radius: 24px;
       padding: 32px;
       max-width: 480px;
       width: 100%;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.45), 0 0 0 1px rgba(255,255,255,0.08) inset;
     }
 
     /* Search */
@@ -67,7 +150,6 @@
     }
     .search button:hover { background: rgba(255,255,255,0.3); }
 
-    /* Suggestions */
     .suggestions {
       position: absolute;
       top: 100%;
@@ -98,7 +180,7 @@
 
     /* Rain alert banner */
     .alert-banner {
-      background: linear-gradient(135deg, rgba(90,140,220,0.35), rgba(60,100,180,0.35));
+      background: linear-gradient(135deg, rgba(90,140,220,0.4), rgba(60,100,180,0.4));
       border: 1px solid rgba(140,190,255,0.5);
       border-radius: 14px;
       padding: 12px 14px;
@@ -111,7 +193,7 @@
     }
     .alert-banner.show { display: flex; }
     .alert-banner.severe {
-      background: linear-gradient(135deg, rgba(160,90,220,0.35), rgba(120,60,180,0.35));
+      background: linear-gradient(135deg, rgba(160,90,220,0.4), rgba(120,60,180,0.4));
       border-color: rgba(200,150,255,0.6);
     }
     @keyframes slideIn {
@@ -135,9 +217,7 @@
       white-space: nowrap;
     }
     .alert-enable:hover { background: rgba(255,255,255,0.3); }
-    .alert-enable.enabled { background: rgba(62,207,142,0.3); border-color: rgba(62,207,142,0.5); }
 
-    /* Notification toggle row */
     .notif-row {
       display: flex;
       align-items: center;
@@ -180,7 +260,6 @@
       gap: 6px;
       flex-wrap: wrap;
       margin-bottom: 16px;
-      min-height: 0;
     }
     .fav-chip {
       display: inline-flex;
@@ -216,7 +295,6 @@
     }
     .fav-chip .remove:hover { background: rgba(255,90,90,0.6); opacity: 1; }
 
-    /* Save button */
     .save-btn {
       background: none;
       border: none;
@@ -245,8 +323,18 @@
     .temp {
       font-size: 84px; font-weight: 200; text-align: center;
       line-height: 1; letter-spacing: -4px; margin: 8px 0;
+      text-shadow: 0 4px 20px rgba(0,0,0,0.15);
     }
-    .emoji { font-size: 58px; text-align: center; margin: 6px 0; line-height: 1; }
+    .emoji {
+      font-size: 58px; text-align: center; margin: 6px 0;
+      line-height: 1;
+      filter: drop-shadow(0 4px 12px rgba(0,0,0,0.15));
+      animation: emojiFloat 4s ease-in-out infinite;
+    }
+    @keyframes emojiFloat {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-4px); }
+    }
     .desc { text-align: center; font-size: 16px; opacity: 0.9; margin-bottom: 18px; }
     .details {
       display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
@@ -261,7 +349,6 @@
     }
     .section { margin-top: 22px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.15); }
 
-    /* Hourly */
     .hourly-scroll {
       display: flex; gap: 8px;
       overflow-x: auto; overflow-y: hidden;
@@ -299,7 +386,6 @@
       min-height: 12px; font-weight: 600;
     }
 
-    /* 7 day */
     .forecast-row { display: flex; gap: 6px; justify-content: space-between; }
     .day-card {
       flex: 1; background: rgba(255,255,255,0.08);
@@ -334,10 +420,24 @@
       .day-temps { font-size: 10px; }
       .hour-card { width: 56px; }
       .fav-chip .name { max-width: 80px; }
+      #sun-glow { width: 180px; height: 180px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .emoji, #sun-glow.show, .star, .cloud { animation: none !important; }
     }
   </style>
 </head>
 <body>
+
+  <!-- Background animation layer -->
+  <div id="bg-layer">
+    <div id="sun-glow"></div>
+    <div id="stars"></div>
+    <div id="clouds"></div>
+    <canvas id="particles"></canvas>
+  </div>
+
   <div class="card">
     <div class="search">
       <input id="city-input" placeholder="Search a city…" autocomplete="off">
@@ -380,38 +480,198 @@ let favorites = loadFavorites();
 let notifyEnabled = localStorage.getItem('weather_notify') === 'on';
 let lastNotifiedKey = localStorage.getItem('weather_last_notify') || '';
 
-// ================= NOTIFICATIONS =================
+// ==================== ANIMATED BACKGROUND ====================
+const particleCanvas = document.getElementById('particles');
+const pctx = particleCanvas.getContext('2d');
+let particles = [];
+let particleType = null;   // 'rain' | 'snow' | null
+let animFrame = null;
+let lastAnimKey = '';
+
+function resizeCanvas() {
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  particleCanvas.width = window.innerWidth * dpr;
+  particleCanvas.height = window.innerHeight * dpr;
+  particleCanvas.style.width = window.innerWidth + 'px';
+  particleCanvas.style.height = window.innerHeight + 'px';
+  pctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  if (particleType) makeParticles(particleType);
+}
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();
+
+function makeParticles(type) {
+  particles = [];
+  const w = window.innerWidth;
+  const h = window.innerHeight;
+  const count = type === 'rain' ? 110 : 70;
+  for (let i = 0; i < count; i++) {
+    particles.push({
+      x: Math.random() * w,
+      y: Math.random() * h,
+      vx: type === 'rain' ? -1.5 : (Math.random() - 0.5) * 0.4,
+      vy: type === 'rain' ? 11 + Math.random() * 7 : 0.8 + Math.random() * 1.6,
+      size: type === 'rain' ? 1 : 1.5 + Math.random() * 2,
+      wobble: Math.random() * Math.PI * 2,
+      wobbleSpeed: 0.02 + Math.random() * 0.03
+    });
+  }
+}
+
+function drawParticles() {
+  const w = window.innerWidth;
+  const h = window.innerHeight;
+  pctx.clearRect(0, 0, w, h);
+  if (!particleType) return;
+
+  if (particleType === 'rain') {
+    pctx.strokeStyle = 'rgba(180,215,255,0.55)';
+    pctx.lineWidth = 1.4;
+    pctx.lineCap = 'round';
+    for (const p of particles) {
+      pctx.beginPath();
+      pctx.moveTo(p.x, p.y);
+      pctx.lineTo(p.x + p.vx * 2.2, p.y + p.vy * 1.4);
+      pctx.stroke();
+    }
+  } else if (particleType === 'snow') {
+    pctx.fillStyle = 'rgba(255,255,255,0.85)';
+    for (const p of particles) {
+      pctx.beginPath();
+      pctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+      pctx.fill();
+    }
+  }
+}
+
+function updateParticles() {
+  const w = window.innerWidth;
+  const h = window.innerHeight;
+  for (const p of particles) {
+    p.x += p.vx;
+    p.y += p.vy;
+    if (particleType === 'snow') {
+      p.wobble += p.wobbleSpeed;
+      p.x += Math.sin(p.wobble) * 0.7;
+    }
+    if (p.y > h + 20) {
+      p.y = -20;
+      p.x = Math.random() * w;
+    }
+    if (p.x < -30) p.x = w + 20;
+    if (p.x > w + 30) p.x = -20;
+  }
+}
+
+function loop() {
+  updateParticles();
+  drawParticles();
+  animFrame = requestAnimationFrame(loop);
+}
+
+function startParticles(type) {
+  if (particleType === type) return;
+  particleType = type;
+
+  if (type) {
+    makeParticles(type);
+    if (!animFrame) loop();
+  } else {
+    particles = [];
+    pctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+    if (animFrame) {
+      cancelAnimationFrame(animFrame);
+      animFrame = null;
+    }
+  }
+}
+
+function applyWeatherAnimation(code, isDay) {
+  const key = `${code}-${isDay ? 'd' : 'n'}`;
+  if (key === lastAnimKey) return;
+  lastAnimKey = key;
+
+  // Reset
+  document.getElementById('clouds').innerHTML = '';
+  document.getElementById('stars').innerHTML = '';
+  document.getElementById('stars').classList.remove('show');
+  document.getElementById('sun-glow').classList.remove('show');
+  startParticles(null);
+
+  // Classify
+  const isClear   = code === 0 || code === 1;
+  const isPartly  = code === 2;
+  const isCloudy  = code === 3 || (code >= 45 && code <= 48);
+  const isRain    = (code >= 51 && code <= 67) || (code >= 80 && code <= 82);
+  const isSnow    = (code >= 71 && code <= 77) || (code >= 85 && code <= 86);
+  const isStorm   = code >= 95;
+
+  // Sun glow (day + clear/partly)
+  if (isDay && (isClear || isPartly)) {
+    document.getElementById('sun-glow').classList.add('show');
+  }
+
+  // Stars (night + clear)
+  if (!isDay && isClear) {
+    const starsEl = document.getElementById('stars');
+    for (let i = 0; i < 55; i++) {
+      const s = document.createElement('div');
+      s.className = 'star';
+      s.style.left = Math.random() * 100 + '%';
+      s.style.top = Math.random() * 70 + '%';
+      s.style.animationDelay = (Math.random() * 3) + 's';
+      s.style.animationDuration = (2 + Math.random() * 3) + 's';
+      starsEl.appendChild(s);
+    }
+    starsEl.classList.add('show');
+  }
+
+  // Clouds
+  const cloudCount = isStorm ? 7 : isRain || isSnow ? 5 : isCloudy ? 4 : isPartly ? 2 : 0;
+  if (cloudCount > 0) {
+    const cloudsEl = document.getElementById('clouds');
+    for (let i = 0; i < cloudCount; i++) {
+      const c = document.createElement('div');
+      c.className = 'cloud';
+      c.style.top = (3 + Math.random() * 45) + '%';
+      c.style.width = (110 + Math.random() * 140) + 'px';
+      c.style.height = (36 + Math.random() * 34) + 'px';
+      c.style.animationDuration = (40 + Math.random() * 40) + 's';
+      c.style.animationDelay = (-Math.random() * 60) + 's';
+      c.style.opacity = isStorm ? 0.55 : isRain || isSnow ? 0.5 : 0.35;
+      cloudsEl.appendChild(c);
+    }
+  }
+
+  // Rain / snow particles
+  if (isRain || isStorm) startParticles('rain');
+  else if (isSnow) startParticles('snow');
+}
+
+// ==================== NOTIFICATIONS ====================
 function updateNotifToggle() {
   if (notifyEnabled) notifToggle.classList.add('on');
   else notifToggle.classList.remove('on');
 }
 function toggleNotifications() {
-  if (!notifyEnabled) {
-    enableNotifications();
-  } else {
+  if (!notifyEnabled) enableNotifications();
+  else {
     notifyEnabled = false;
     localStorage.setItem('weather_notify', 'off');
     updateNotifToggle();
   }
 }
 async function enableNotifications() {
-  if (!('Notification' in window)) {
-    alert('Your browser does not support notifications.');
-    return;
-  }
+  if (!('Notification' in window)) { alert('Your browser does not support notifications.'); return; }
   let perm = Notification.permission;
-  if (perm === 'default') {
-    perm = await Notification.requestPermission();
-  }
+  if (perm === 'default') perm = await Notification.requestPermission();
   if (perm === 'granted') {
     notifyEnabled = true;
     localStorage.setItem('weather_notify', 'on');
     updateNotifToggle();
-    // Test notification
     try {
       new Notification('CafeTab Weather', {
-        body: '🔔 Rain alerts are on. We\'ll notify you when rain is coming.',
-        icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y="80" font-size="80">🌧️</text></svg>'
+        body: '🔔 Rain alerts are on. We\'ll notify you when rain is coming.'
       });
     } catch(e) {}
   } else {
@@ -419,19 +679,11 @@ async function enableNotifications() {
   }
 }
 function sendNotification(title, body) {
-  if (!notifyEnabled) return;
-  if (Notification.permission !== 'granted') return;
-  try {
-    new Notification(title, {
-      body,
-      tag: 'rain-alert',      // replaces old one instead of stacking
-      renotify: true,
-      icon: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y="80" font-size="80">🌧️</text></svg>'
-    });
-  } catch(e) {}
+  if (!notifyEnabled || Notification.permission !== 'granted') return;
+  try { new Notification(title, { body, tag: 'rain-alert', renotify: true }); } catch(e) {}
 }
 
-// ================= FAVORITES =================
+// ==================== FAVORITES ====================
 function loadFavorites() {
   try {
     const s = localStorage.getItem('weather_favorites');
@@ -445,11 +697,8 @@ function isFavorite(city) {
   return favorites.some(f => f.lat === city.lat && f.lon === city.lon);
 }
 function toggleFavorite() {
-  if (isFavorite(current)) {
-    favorites = favorites.filter(f => !(f.lat === current.lat && f.lon === current.lon));
-  } else {
-    favorites.push({ name: current.name, country: current.country, lat: current.lat, lon: current.lon });
-  }
+  if (isFavorite(current)) favorites = favorites.filter(f => !(f.lat === current.lat && f.lon === current.lon));
+  else favorites.push({ name: current.name, country: current.country, lat: current.lat, lon: current.lon });
   saveFavorites();
   renderFavorites();
   updateSaveButton();
@@ -482,22 +731,16 @@ function updateSaveButton() {
   const btn = document.getElementById('save-btn');
   if (!btn) return;
   if (isFavorite(current)) {
-    btn.classList.add('saved');
-    btn.textContent = '★';
-    btn.title = 'Remove from favorites';
+    btn.classList.add('saved'); btn.textContent = '★'; btn.title = 'Remove from favorites';
   } else {
-    btn.classList.remove('saved');
-    btn.textContent = '☆';
-    btn.title = 'Save to favorites';
+    btn.classList.remove('saved'); btn.textContent = '☆'; btn.title = 'Save to favorites';
   }
 }
 
-// ================= RAIN ALERT LOGIC =================
-// Analyze the next N hours and return the most important rain event.
+// ==================== RAIN ALERT LOGIC ====================
 function analyzeRain(hourly, startIdx) {
   const next = [];
-  const hoursToCheck = 12;
-  for (let i = 0; i < hoursToCheck; i++) {
+  for (let i = 0; i < 12; i++) {
     const idx = startIdx + i;
     if (idx >= hourly.time.length) break;
     next.push({
@@ -507,21 +750,13 @@ function analyzeRain(hourly, startIdx) {
       rain: hourly.precipitation_probability[idx]
     });
   }
-
-  // Find first hour with significant rain
   const rainEvent = next.find(h => h.rain >= 50 || (h.code >= 51 && h.code <= 67) || h.code >= 80);
   if (!rainEvent) return null;
-
-  // Check if it will be severe (thunderstorm code 95-99)
   const severe = next.some(h => h.code >= 95 && h.code <= 99);
   return { event: rainEvent, severe };
 }
-
 function showRainAlert(info) {
-  if (!info) {
-    alertBanner.classList.remove('show', 'severe');
-    return;
-  }
+  if (!info) { alertBanner.classList.remove('show', 'severe'); return; }
   const { event, severe } = info;
 
   let timeText;
@@ -530,37 +765,24 @@ function showRainAlert(info) {
   else timeText = `in about ${event.i} hours`;
 
   const desc = severe ? 'Thunderstorm' : (event.rain >= 70 ? 'Heavy rain' : 'Rain');
-
   alertIcon.textContent = severe ? '⛈️' : '🌧️';
-  alertText.innerHTML = `
-    <strong>${desc} expected ${timeText}</strong>
-    ${event.rain}% chance · ${weatherDesc(event.code)}
-  `;
+  alertText.innerHTML = `<strong>${desc} expected ${timeText}</strong>${event.rain}% chance · ${weatherDesc(event.code)}`;
   alertBanner.classList.add('show');
-  if (severe) alertBanner.classList.add('severe');
-  else alertBanner.classList.remove('severe');
+  alertBanner.classList.toggle('severe', severe);
 
-  // Enable button visibility
-  if (notifyEnabled && Notification.permission === 'granted') {
-    alertEnable.style.display = 'none';
-  } else {
-    alertEnable.style.display = '';
-    alertEnable.textContent = 'Enable alerts';
-    alertEnable.classList.remove('enabled');
-  }
+  if (notifyEnabled && Notification.permission === 'granted') alertEnable.style.display = 'none';
+  else alertEnable.style.display = '';
 
-  // Fire notification (only once per unique event, per city, per day)
   const key = `${current.lat},${current.lon},${event.time}`;
   if (notifyEnabled && Notification.permission === 'granted' && key !== lastNotifiedKey) {
-    const title = severe ? '⛈️ Thunderstorm incoming' : '🌧️ Rain incoming';
-    const body = `${current.name}: ${desc} ${timeText} (${event.rain}% chance)`;
-    sendNotification(title, body);
+    sendNotification(severe ? '⛈️ Thunderstorm incoming' : '🌧️ Rain incoming',
+      `${current.name}: ${desc} ${timeText} (${event.rain}% chance)`);
     lastNotifiedKey = key;
     localStorage.setItem('weather_last_notify', key);
   }
 }
 
-// ================= SUGGESTIONS =================
+// ==================== SUGGESTIONS ====================
 let suggestTimer = null;
 input.addEventListener('input', () => {
   clearTimeout(suggestTimer);
@@ -603,7 +825,6 @@ async function fetchSuggestions(query) {
     suggestionsEl.classList.add('show');
   } catch (e) { console.error(e); }
 }
-
 function pickCity(place) {
   current = {
     name: place.name,
@@ -616,7 +837,6 @@ function pickCity(place) {
   saveCurrent();
   loadWeather();
 }
-
 async function searchCity() {
   const q = input.value.trim();
   if (!q) return;
@@ -628,7 +848,7 @@ async function searchCity() {
   pickCity(r);
 }
 
-// ================= WEATHER =================
+// ==================== WEATHER ====================
 async function loadWeather() {
   contentEl.innerHTML = '<div class="status">Loading weather…</div>';
 
@@ -648,8 +868,8 @@ async function loadWeather() {
     const emoji = weatherEmoji(c.weather_code, c.is_day === 1);
     const desc = weatherDesc(c.weather_code);
     setBackground(c.weather_code, c.is_day === 1);
+    applyWeatherAnimation(c.weather_code, c.is_day === 1);
 
-    // Hourly
     const nowHourPrefix = c.time.slice(0, 13);
     let startIdx = h.time.findIndex(t => t.startsWith(nowHourPrefix));
     if (startIdx < 0) startIdx = 0;
@@ -672,7 +892,6 @@ async function loadWeather() {
         </div>`;
     }).join('');
 
-    // Daily
     const today = c.time.slice(0, 10);
     const forecastHtml = d.time.map((dateStr, i) => {
       const date = new Date(dateStr + 'T12:00:00');
@@ -730,7 +949,7 @@ async function loadWeather() {
   }
 }
 
-// ================= BACKGROUNDS =================
+// ==================== BACKGROUNDS ====================
 function setBackground(code, isDay) {
   let bg;
   if (!isDay) bg = 'linear-gradient(135deg, #0f2027, #203a43, #2c5364)';
@@ -743,7 +962,7 @@ function setBackground(code, isDay) {
   document.body.style.background = bg;
 }
 
-// ================= WEATHER CODES =================
+// ==================== WEATHER CODES ====================
 function weatherEmoji(code, isDay = true) {
   if (code === 0) return isDay ? '☀️' : '🌙';
   if (code <= 2) return isDay ? '🌤️' : '☁️';
@@ -771,7 +990,7 @@ function weatherDesc(code) {
   return 'Unknown';
 }
 
-// ================= HELPERS =================
+// ==================== HELPERS ====================
 function escapeHtml(s) {
   return String(s).replace(/[&<>"']/g, ch => ({
     '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
@@ -787,7 +1006,7 @@ function loadSavedCurrent() {
   } catch(e) { return null; }
 }
 
-// ================= START =================
+// ==================== START ====================
 updateNotifToggle();
 renderFavorites();
 loadWeather();
