@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Weather</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <style>
     * { box-sizing: border-box; }
     body {
@@ -20,35 +22,22 @@
       overflow-x: hidden;
     }
 
-    /* ============ BACKGROUND LAYER ============ */
+    /* Background layer */
     #bg-layer {
-      position: fixed;
-      inset: 0;
-      z-index: 0;
-      pointer-events: none;
-      overflow: hidden;
+      position: fixed; inset: 0; z-index: 0;
+      pointer-events: none; overflow: hidden;
     }
     #particles {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      display: block;
+      position: absolute; inset: 0;
+      width: 100%; height: 100%; display: block;
     }
-    #clouds, #stars {
-      position: absolute;
-      inset: 0;
-      overflow: hidden;
-    }
+    #clouds, #stars { position: absolute; inset: 0; overflow: hidden; }
     #stars { display: none; }
     #stars.show { display: block; }
 
     .star {
-      position: absolute;
-      width: 2px;
-      height: 2px;
-      background: white;
-      border-radius: 50%;
+      position: absolute; width: 2px; height: 2px;
+      background: white; border-radius: 50%;
       animation: twinkle 3s ease-in-out infinite;
       box-shadow: 0 0 4px rgba(255,255,255,0.7);
     }
@@ -56,7 +45,6 @@
       0%, 100% { opacity: 0.25; transform: scale(0.9); }
       50% { opacity: 1; transform: scale(1.15); }
     }
-
     .cloud {
       position: absolute;
       background: radial-gradient(ellipse at center,
@@ -73,14 +61,9 @@
       from { left: -30%; }
       to   { left: 115%; }
     }
-
     #sun-glow {
-      position: absolute;
-      top: 6%;
-      right: 8%;
-      width: 260px;
-      height: 260px;
-      border-radius: 50%;
+      position: absolute; top: 6%; right: 8%;
+      width: 260px; height: 260px; border-radius: 50%;
       background: radial-gradient(circle,
         rgba(255,235,150,0.7) 0%,
         rgba(255,200,100,0.35) 30%,
@@ -89,107 +72,67 @@
       transition: opacity 1s ease;
       filter: blur(8px);
     }
-    #sun-glow.show {
-      opacity: 1;
-      animation: sunPulse 7s ease-in-out infinite;
-    }
+    #sun-glow.show { opacity: 1; animation: sunPulse 7s ease-in-out infinite; }
     @keyframes sunPulse {
       0%, 100% { transform: scale(1); }
       50% { transform: scale(1.15); }
     }
 
-    /* ============ CARD ============ */
+    /* Card */
     .card {
-      position: relative;
-      z-index: 1;
+      position: relative; z-index: 1;
       background: rgba(255,255,255,0.13);
       backdrop-filter: blur(22px);
       -webkit-backdrop-filter: blur(22px);
       border-radius: 24px;
       padding: 32px;
-      max-width: 480px;
-      width: 100%;
+      max-width: 480px; width: 100%;
       box-shadow: 0 20px 60px rgba(0,0,0,0.45), 0 0 0 1px rgba(255,255,255,0.08) inset;
     }
 
-    /* Search */
-    .search {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 12px;
-      position: relative;
-    }
+    .search { display: flex; gap: 8px; margin-bottom: 12px; position: relative; }
     .search input {
-      flex: 1;
-      padding: 13px 16px;
+      flex: 1; padding: 13px 16px;
       border-radius: 12px;
       border: 1px solid rgba(255,255,255,0.2);
       background: rgba(255,255,255,0.1);
-      color: white;
-      font-size: 15px;
-      font-family: inherit;
-      outline: none;
-      transition: all 0.2s;
-      min-width: 0;
+      color: white; font-size: 15px; font-family: inherit;
+      outline: none; transition: all 0.2s; min-width: 0;
     }
     .search input::placeholder { color: rgba(255,255,255,0.5); }
-    .search input:focus {
-      background: rgba(255,255,255,0.18);
-      border-color: rgba(255,255,255,0.4);
-    }
+    .search input:focus { background: rgba(255,255,255,0.18); border-color: rgba(255,255,255,0.4); }
     .search button {
-      padding: 0 18px;
-      border-radius: 12px;
-      border: none;
-      background: rgba(255,255,255,0.2);
-      color: white;
-      font-size: 18px;
-      cursor: pointer;
-      transition: all 0.2s;
-      flex-shrink: 0;
+      padding: 0 18px; border-radius: 12px; border: none;
+      background: rgba(255,255,255,0.2); color: white;
+      font-size: 18px; cursor: pointer; transition: all 0.2s; flex-shrink: 0;
     }
     .search button:hover { background: rgba(255,255,255,0.3); }
 
     .suggestions {
-      position: absolute;
-      top: 100%;
-      left: 0;
-      right: 0;
-      margin-top: 6px;
+      position: absolute; top: 100%; left: 0; right: 0; margin-top: 6px;
       background: rgba(30,50,90,0.98);
-      border-radius: 12px;
-      overflow: hidden;
+      border-radius: 12px; overflow: hidden;
       box-shadow: 0 12px 40px rgba(0,0,0,0.5);
-      max-height: 260px;
-      overflow-y: auto;
-      z-index: 10;
+      max-height: 260px; overflow-y: auto; z-index: 10;
       display: none;
     }
     .suggestions.show { display: block; }
     .suggestion {
-      padding: 12px 16px;
-      cursor: pointer;
+      padding: 12px 16px; cursor: pointer;
       border-bottom: 1px solid rgba(255,255,255,0.08);
-      font-size: 14px;
-      transition: background 0.15s;
+      font-size: 14px; transition: background 0.15s;
     }
     .suggestion:last-child { border-bottom: none; }
     .suggestion:hover { background: rgba(255,255,255,0.1); }
     .suggestion .country { opacity: 0.6; font-size: 12px; margin-left: 6px; }
     .suggestion .admin { opacity: 0.5; font-size: 12px; display: block; margin-top: 2px; }
 
-    /* Rain alert banner */
     .alert-banner {
       background: linear-gradient(135deg, rgba(90,140,220,0.4), rgba(60,100,180,0.4));
       border: 1px solid rgba(140,190,255,0.5);
-      border-radius: 14px;
-      padding: 12px 14px;
-      margin-bottom: 14px;
-      display: none;
-      align-items: center;
-      gap: 10px;
-      animation: slideIn 0.4s ease;
-      backdrop-filter: blur(10px);
+      border-radius: 14px; padding: 12px 14px; margin-bottom: 14px;
+      display: none; align-items: center; gap: 10px;
+      animation: slideIn 0.4s ease; backdrop-filter: blur(10px);
     }
     .alert-banner.show { display: flex; }
     .alert-banner.severe {
@@ -206,75 +149,41 @@
     .alert-enable {
       background: rgba(255,255,255,0.18);
       border: 1px solid rgba(255,255,255,0.3);
-      color: white;
-      padding: 6px 10px;
-      border-radius: 8px;
-      font-size: 11px;
-      font-weight: 700;
-      cursor: pointer;
-      flex-shrink: 0;
-      transition: all 0.2s;
-      white-space: nowrap;
+      color: white; padding: 6px 10px;
+      border-radius: 8px; font-size: 11px; font-weight: 700;
+      cursor: pointer; flex-shrink: 0; white-space: nowrap;
     }
     .alert-enable:hover { background: rgba(255,255,255,0.3); }
 
     .notif-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      padding: 10px 14px;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 10px; padding: 10px 14px;
       background: rgba(255,255,255,0.06);
-      border-radius: 12px;
-      margin-bottom: 14px;
-      font-size: 13px;
+      border-radius: 12px; margin-bottom: 14px; font-size: 13px;
     }
     .notif-row .label { display: flex; align-items: center; gap: 8px; opacity: 0.85; }
     .notif-toggle {
-      position: relative;
-      width: 42px;
-      height: 24px;
-      background: rgba(255,255,255,0.2);
-      border-radius: 12px;
-      cursor: pointer;
-      transition: background 0.2s;
-      flex-shrink: 0;
+      position: relative; width: 42px; height: 24px;
+      background: rgba(255,255,255,0.2); border-radius: 12px;
+      cursor: pointer; transition: background 0.2s; flex-shrink: 0;
     }
     .notif-toggle.on { background: rgba(62,207,142,0.6); }
     .notif-toggle::after {
-      content: '';
-      position: absolute;
-      top: 2px;
-      left: 2px;
-      width: 20px;
-      height: 20px;
-      background: white;
-      border-radius: 50%;
-      transition: transform 0.2s;
+      content: ''; position: absolute;
+      top: 2px; left: 2px; width: 20px; height: 20px;
+      background: white; border-radius: 50%; transition: transform 0.2s;
     }
     .notif-toggle.on::after { transform: translateX(18px); }
 
-    /* Favorites */
-    .favorites {
-      display: flex;
-      gap: 6px;
-      flex-wrap: wrap;
-      margin-bottom: 16px;
-    }
+    .favorites { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px; }
     .fav-chip {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
+      display: inline-flex; align-items: center; gap: 6px;
       padding: 6px 10px 6px 12px;
       background: rgba(255,255,255,0.1);
-      border-radius: 20px;
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s;
+      border-radius: 20px; font-size: 13px; font-weight: 600;
+      cursor: pointer; transition: all 0.2s;
       border: 1px solid rgba(255,255,255,0.15);
-      user-select: none;
-      max-width: 100%;
+      user-select: none; max-width: 100%;
     }
     .fav-chip:hover { background: rgba(255,255,255,0.2); transform: translateY(-1px); }
     .fav-chip.active {
@@ -284,36 +193,26 @@
     }
     .fav-chip .name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 110px; }
     .fav-chip .remove {
-      width: 16px; height: 16px;
-      border-radius: 50%;
+      width: 16px; height: 16px; border-radius: 50%;
       background: rgba(255,255,255,0.15);
       display: inline-flex; align-items: center; justify-content: center;
       font-size: 11px; line-height: 1;
-      opacity: 0.7;
-      transition: all 0.15s;
-      flex-shrink: 0;
+      opacity: 0.7; transition: all 0.15s; flex-shrink: 0;
     }
     .fav-chip .remove:hover { background: rgba(255,90,90,0.6); opacity: 1; }
 
     .save-btn {
-      background: none;
-      border: none;
-      color: rgba(255,255,255,0.55);
-      cursor: pointer;
-      font-size: 22px;
-      padding: 4px 8px;
-      transition: all 0.2s;
-      line-height: 1;
+      background: none; border: none;
+      color: rgba(255,255,255,0.55); cursor: pointer;
+      font-size: 22px; padding: 4px 8px;
+      transition: all 0.2s; line-height: 1;
     }
     .save-btn:hover { color: #ffd76e; transform: scale(1.15); }
     .save-btn.saved { color: #ffd76e; }
 
     .location-row {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      margin-bottom: 4px;
+      display: flex; align-items: center;
+      justify-content: center; gap: 6px; margin-bottom: 4px;
     }
     .location { font-size: 20px; font-weight: 600; text-align: center; }
     .country-name {
@@ -327,8 +226,7 @@
     }
     .emoji {
       font-size: 58px; text-align: center; margin: 6px 0;
-      line-height: 1;
-      filter: drop-shadow(0 4px 12px rgba(0,0,0,0.15));
+      line-height: 1; filter: drop-shadow(0 4px 12px rgba(0,0,0,0.15));
       animation: emojiFloat 4s ease-in-out infinite;
     }
     @keyframes emojiFloat {
@@ -351,24 +249,18 @@
 
     .hourly-scroll {
       display: flex; gap: 8px;
-      overflow-x: auto; overflow-y: hidden;
-      padding-bottom: 6px;
-      scroll-snap-type: x mandatory;
-      -webkit-overflow-scrolling: touch;
-      scrollbar-width: thin;
-      scrollbar-color: rgba(255,255,255,0.3) transparent;
+      overflow-x: auto; overflow-y: hidden; padding-bottom: 6px;
+      scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch;
+      scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.3) transparent;
     }
     .hourly-scroll::-webkit-scrollbar { height: 5px; }
     .hourly-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.3); border-radius: 3px; }
     .hourly-scroll::-webkit-scrollbar-track { background: transparent; }
     .hour-card {
-      flex: 0 0 auto;
-      width: 62px;
+      flex: 0 0 auto; width: 62px;
       background: rgba(255,255,255,0.08);
-      border-radius: 12px;
-      padding: 12px 4px;
-      text-align: center;
-      scroll-snap-align: start;
+      border-radius: 12px; padding: 12px 4px;
+      text-align: center; scroll-snap-align: start;
       transition: background 0.2s;
     }
     .hour-card:hover { background: rgba(255,255,255,0.16); }
@@ -381,10 +273,7 @@
     .hour-card.now .hour-label { opacity: 1; }
     .hour-emoji { font-size: 20px; margin: 6px 0; line-height: 1; }
     .hour-temp { font-size: 13px; font-weight: 700; }
-    .hour-rain {
-      font-size: 10px; color: #8ecbff; margin-top: 2px;
-      min-height: 12px; font-weight: 600;
-    }
+    .hour-rain { font-size: 10px; color: #8ecbff; margin-top: 2px; min-height: 12px; font-weight: 600; }
 
     .forecast-row { display: flex; gap: 6px; justify-content: space-between; }
     .day-card {
@@ -409,6 +298,174 @@
     .status { text-align: center; opacity: 0.75; font-size: 14px; padding: 40px 0; }
     .error { text-align: center; padding: 20px 0; font-size: 14px; color: #ffb4b4; }
 
+    /* Map button */
+    .map-btn {
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      width: 100%; margin-top: 16px; padding: 13px;
+      background: linear-gradient(135deg, rgba(90,140,220,0.35), rgba(60,100,180,0.35));
+      border: 1px solid rgba(140,190,255,0.5);
+      color: white; font-size: 14px; font-weight: 700;
+      border-radius: 14px; cursor: pointer;
+      transition: all 0.2s; font-family: inherit;
+    }
+    .map-btn:hover {
+      background: linear-gradient(135deg, rgba(90,140,220,0.5), rgba(60,100,180,0.5));
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(90,140,220,0.3);
+    }
+
+    /* Map overlay */
+    #map-overlay {
+      position: fixed; inset: 0; z-index: 1000;
+      background: #0b1220;
+      display: flex; flex-direction: column;
+      animation: mapIn 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+    @keyframes mapIn {
+      from { opacity: 0; transform: scale(0.98); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    #map { flex: 1; position: relative; z-index: 1; background: #e8ecef; }
+
+    .map-topbar {
+      position: absolute; top: 14px; left: 14px; right: 14px;
+      z-index: 1000;
+      display: flex; align-items: center; gap: 10px;
+      pointer-events: none;
+    }
+    .map-topbar > * { pointer-events: auto; }
+    .map-close, .map-radar-toggle {
+      background: rgba(20,28,45,0.92);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.15);
+      color: white; font-family: inherit;
+      cursor: pointer; transition: all 0.2s;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+    }
+    .map-close {
+      width: 42px; height: 42px; border-radius: 12px;
+      font-size: 18px; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .map-close:hover { background: rgba(255,90,90,0.3); border-color: rgba(255,90,90,0.5); }
+    .map-title {
+      flex: 1; padding: 11px 16px;
+      background: rgba(20,28,45,0.92);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 12px; font-size: 14px; font-weight: 600;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .map-radar-toggle {
+      padding: 11px 14px; border-radius: 12px;
+      font-size: 13px; font-weight: 700; white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .map-radar-toggle.on {
+      background: rgba(90,140,220,0.5);
+      border-color: rgba(140,190,255,0.7);
+    }
+    .map-radar-toggle:hover { transform: translateY(-1px); }
+
+    .map-bottom {
+      position: absolute; bottom: 18px; left: 14px; right: 14px;
+      z-index: 1000;
+      background: rgba(20,28,45,0.92);
+      backdrop-filter: blur(14px);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 16px; padding: 12px 16px;
+      display: flex; align-items: center; gap: 12px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+    }
+    .map-play {
+      width: 40px; height: 40px; border-radius: 50%;
+      background: linear-gradient(135deg, #5a8cdc, #3a6abc);
+      border: none; color: white;
+      font-size: 15px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.2s; flex-shrink: 0;
+      padding-left: 2px;
+    }
+    .map-play:hover { transform: scale(1.08); box-shadow: 0 4px 16px rgba(90,140,220,0.5); }
+    .map-play.playing { padding-left: 0; }
+    #time-slider {
+      flex: 1; -webkit-appearance: none; appearance: none;
+      height: 6px; border-radius: 3px;
+      background: rgba(255,255,255,0.15);
+      outline: none; cursor: pointer;
+    }
+    #time-slider::-webkit-slider-thumb {
+      -webkit-appearance: none; appearance: none;
+      width: 18px; height: 18px; border-radius: 50%;
+      background: #8ecbff; cursor: pointer;
+      box-shadow: 0 0 12px rgba(142,203,255,0.8);
+    }
+    #time-slider::-moz-range-thumb {
+      width: 18px; height: 18px; border-radius: 50%;
+      background: #8ecbff; cursor: pointer; border: none;
+      box-shadow: 0 0 12px rgba(142,203,255,0.8);
+    }
+    .map-time {
+      font-size: 12px; font-weight: 700;
+      color: #8ecbff; min-width: 52px; text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .map-legend {
+      position: absolute; bottom: 90px; right: 14px;
+      z-index: 999;
+      background: rgba(20,28,45,0.9);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 12px; padding: 10px 12px;
+      font-size: 10px; color: rgba(255,255,255,0.8);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+    }
+    .map-legend-title {
+      font-size: 10px; font-weight: 700; letter-spacing: 0.8px;
+      opacity: 0.7; margin-bottom: 6px; text-transform: uppercase;
+    }
+    .legend-bar {
+      width: 130px; height: 8px; border-radius: 4px;
+      background: linear-gradient(90deg,
+        #00b0ff, #00e676, #ffee58, #ff9100, #ff1744, #d500f9);
+    }
+    .legend-labels {
+      display: flex; justify-content: space-between;
+      margin-top: 4px; font-size: 9px; opacity: 0.7;
+    }
+
+    /* Leaflet controls (dark theme) */
+    .leaflet-control-attribution {
+      background: rgba(0,0,0,0.5) !important;
+      color: rgba(255,255,255,0.7) !important;
+      font-size: 9px !important;
+    }
+    .leaflet-control-attribution a { color: rgba(255,255,255,0.9) !important; }
+    .leaflet-bar a {
+      background: rgba(20,28,45,0.92) !important;
+      color: white !important;
+      border-color: rgba(255,255,255,0.15) !important;
+    }
+    .leaflet-bar a:hover {
+      background: rgba(90,140,220,0.6) !important;
+    }
+    .leaflet-popup-content-wrapper {
+      background: rgba(20,28,45,0.95);
+      color: white;
+      border-radius: 12px;
+      backdrop-filter: blur(10px);
+    }
+    .leaflet-popup-tip { background: rgba(20,28,45,0.95); }
+    .leaflet-popup-content { margin: 12px 16px; font-family: inherit; font-size: 13px; }
+
+    @keyframes markerPulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.3); }
+    }
+
     @media (max-width: 480px) {
       .card { padding: 22px 18px; border-radius: 20px; }
       .temp { font-size: 68px; letter-spacing: -3px; }
@@ -421,6 +478,9 @@
       .hour-card { width: 56px; }
       .fav-chip .name { max-width: 80px; }
       #sun-glow { width: 180px; height: 180px; }
+      .map-legend { display: none; }
+      .map-title { font-size: 13px; padding: 10px 12px; }
+      .map-radar-toggle { padding: 10px 12px; font-size: 12px; }
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -430,7 +490,6 @@
 </head>
 <body>
 
-  <!-- Background animation layer -->
   <div id="bg-layer">
     <div id="sun-glow"></div>
     <div id="stars"></div>
@@ -463,6 +522,29 @@
     </div>
   </div>
 
+  <!-- MAP OVERLAY -->
+  <div id="map-overlay" style="display:none;">
+    <div id="map"></div>
+
+    <div class="map-topbar">
+      <button class="map-close" onclick="closeMap()" title="Close map">✕</button>
+      <div class="map-title" id="map-title">📍 Loading…</div>
+      <button class="map-radar-toggle on" id="radar-toggle" onclick="toggleRadar()">🌧️ Radar On</button>
+    </div>
+
+    <div class="map-legend" id="map-legend">
+      <div class="map-legend-title">Rain intensity</div>
+      <div class="legend-bar"></div>
+      <div class="legend-labels"><span>Light</span><span>Heavy</span></div>
+    </div>
+
+    <div class="map-bottom">
+      <button class="map-play" id="play-btn" onclick="togglePlay()" title="Play/Pause">▶</button>
+      <input type="range" id="time-slider" min="0" max="0" value="0" oninput="onSliderChange()">
+      <div class="map-time" id="map-time">--:--</div>
+    </div>
+  </div>
+
 <script>
 const input = document.getElementById('city-input');
 const suggestionsEl = document.getElementById('suggestions');
@@ -480,11 +562,162 @@ let favorites = loadFavorites();
 let notifyEnabled = localStorage.getItem('weather_notify') === 'on';
 let lastNotifiedKey = localStorage.getItem('weather_last_notify') || '';
 
+// ==================== MAP ====================
+let map = null;
+let mapMarker = null;
+let radarLayer = null;
+let radarFrames = [];
+let currentFrameIdx = 0;
+let radarPlaying = false;
+let playInterval = null;
+let radarOn = true;
+
+async function openMap() {
+  const overlay = document.getElementById('map-overlay');
+  overlay.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+
+  await new Promise(r => setTimeout(r, 30));
+
+  if (!map) {
+    map = L.map('map', {
+      zoomControl: true,
+      attributionControl: true,
+      zoomSnap: 0.5,
+      minZoom: 2,
+      maxZoom: 19
+    }).setView([current.lat, current.lon], 8);
+
+    // Keyless light-gray basemap (Esri)
+    // maxNativeZoom: real tiles only exist up to 16; Leaflet will upscale past that
+    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
+      attribution: 'Tiles © Esri — Esri, DeLorme, NAVTEQ',
+      maxNativeZoom: 16,
+      maxZoom: 19
+    }).addTo(map);
+
+    // Load radar frames
+    try {
+      const res = await fetch('https://api.rainviewer.com/public/weather-maps.json');
+      const data = await res.json();
+      radarFrames = data.radar.past || [];
+      document.getElementById('time-slider').max = Math.max(0, radarFrames.length - 1);
+      currentFrameIdx = Math.max(0, radarFrames.length - 1);
+      updateRadarFrame();
+    } catch (e) {
+      console.error('Radar load failed:', e);
+    }
+  } else {
+    map.setView([current.lat, current.lon], Math.max(map.getZoom(), 7));
+  }
+
+  updateMapMarker();
+  document.getElementById('map-title').textContent = `📍 ${current.name}`;
+
+  setTimeout(() => map.invalidateSize(), 100);
+}
+
+function updateMapMarker() {
+  if (!map) return;
+  const popup = `<strong>${escapeHtml(current.name)}</strong><br><span style="opacity:0.7">${escapeHtml(current.country || '')}</span>`;
+  if (mapMarker) {
+    mapMarker.setLatLng([current.lat, current.lon]).setPopupContent(popup);
+  } else {
+    const icon = L.divIcon({
+      className: 'custom-marker',
+      html: `<div style="
+        width: 18px; height: 18px;
+        background: #5a8cdc;
+        border: 3px solid #fff;
+        border-radius: 50%;
+        box-shadow: 0 0 0 4px rgba(90,140,220,0.4), 0 4px 12px rgba(0,0,0,0.5);
+        animation: markerPulse 2s ease-in-out infinite;
+      "></div>`,
+      iconSize: [18, 18],
+      iconAnchor: [9, 9]
+    });
+    mapMarker = L.marker([current.lat, current.lon], { icon }).addTo(map).bindPopup(popup);
+  }
+}
+
+function closeMap() {
+  document.getElementById('map-overlay').style.display = 'none';
+  document.body.style.overflow = '';
+  stopPlay();
+}
+
+function updateRadarFrame() {
+  if (!radarFrames.length || !map) return;
+  const frame = radarFrames[currentFrameIdx];
+  const url = `https://tilecache.rainviewer.com${frame.path}/256/{z}/{x}/{y}/4/1_1.png`;
+
+  if (radarLayer) {
+    radarLayer.setUrl(url);
+  } else if (radarOn) {
+    // RainViewer tiles only go to zoom 12 — upscale beyond that
+    radarLayer = L.tileLayer(url, {
+      opacity: 0.7,
+      tileSize: 256,
+      maxNativeZoom: 12,
+      maxZoom: 19
+    }).addTo(map);
+  }
+
+  const time = new Date(frame.time * 1000);
+  document.getElementById('map-time').textContent =
+    time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  document.getElementById('time-slider').value = currentFrameIdx;
+}
+
+function onSliderChange() {
+  currentFrameIdx = parseInt(document.getElementById('time-slider').value);
+  updateRadarFrame();
+}
+
+function toggleRadar() {
+  radarOn = !radarOn;
+  const btn = document.getElementById('radar-toggle');
+  if (radarOn) {
+    btn.classList.add('on');
+    btn.textContent = '🌧️ Radar On';
+    if (map && radarFrames.length) updateRadarFrame();
+  } else {
+    btn.classList.remove('on');
+    btn.textContent = '🌧️ Radar Off';
+    if (radarLayer && map) { map.removeLayer(radarLayer); radarLayer = null; }
+  }
+}
+
+function togglePlay() {
+  if (radarPlaying) stopPlay();
+  else startPlay();
+}
+function startPlay() {
+  if (radarFrames.length < 2) return;
+  radarPlaying = true;
+  const btn = document.getElementById('play-btn');
+  btn.textContent = '❚❚';
+  btn.classList.add('playing');
+  playInterval = setInterval(() => {
+    currentFrameIdx = (currentFrameIdx + 1) % radarFrames.length;
+    updateRadarFrame();
+  }, 450);
+}
+function stopPlay() {
+  radarPlaying = false;
+  if (playInterval) { clearInterval(playInterval); playInterval = null; }
+  const btn = document.getElementById('play-btn');
+  if (btn) {
+    btn.textContent = '▶';
+    btn.classList.remove('playing');
+  }
+}
+
 // ==================== ANIMATED BACKGROUND ====================
 const particleCanvas = document.getElementById('particles');
 const pctx = particleCanvas.getContext('2d');
 let particles = [];
-let particleType = null;   // 'rain' | 'snow' | null
+let particleType = null;
 let animFrame = null;
 let lastAnimKey = '';
 
@@ -517,17 +750,14 @@ function makeParticles(type) {
     });
   }
 }
-
 function drawParticles() {
   const w = window.innerWidth;
   const h = window.innerHeight;
   pctx.clearRect(0, 0, w, h);
   if (!particleType) return;
-
   if (particleType === 'rain') {
     pctx.strokeStyle = 'rgba(180,215,255,0.55)';
-    pctx.lineWidth = 1.4;
-    pctx.lineCap = 'round';
+    pctx.lineWidth = 1.4; pctx.lineCap = 'round';
     for (const p of particles) {
       pctx.beginPath();
       pctx.moveTo(p.x, p.y);
@@ -543,75 +773,57 @@ function drawParticles() {
     }
   }
 }
-
 function updateParticles() {
   const w = window.innerWidth;
   const h = window.innerHeight;
   for (const p of particles) {
-    p.x += p.vx;
-    p.y += p.vy;
+    p.x += p.vx; p.y += p.vy;
     if (particleType === 'snow') {
       p.wobble += p.wobbleSpeed;
       p.x += Math.sin(p.wobble) * 0.7;
     }
-    if (p.y > h + 20) {
-      p.y = -20;
-      p.x = Math.random() * w;
-    }
+    if (p.y > h + 20) { p.y = -20; p.x = Math.random() * w; }
     if (p.x < -30) p.x = w + 20;
     if (p.x > w + 30) p.x = -20;
   }
 }
-
 function loop() {
   updateParticles();
   drawParticles();
   animFrame = requestAnimationFrame(loop);
 }
-
 function startParticles(type) {
   if (particleType === type) return;
   particleType = type;
-
   if (type) {
     makeParticles(type);
     if (!animFrame) loop();
   } else {
     particles = [];
     pctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
-    if (animFrame) {
-      cancelAnimationFrame(animFrame);
-      animFrame = null;
-    }
+    if (animFrame) { cancelAnimationFrame(animFrame); animFrame = null; }
   }
 }
-
 function applyWeatherAnimation(code, isDay) {
   const key = `${code}-${isDay ? 'd' : 'n'}`;
   if (key === lastAnimKey) return;
   lastAnimKey = key;
 
-  // Reset
   document.getElementById('clouds').innerHTML = '';
   document.getElementById('stars').innerHTML = '';
   document.getElementById('stars').classList.remove('show');
   document.getElementById('sun-glow').classList.remove('show');
   startParticles(null);
 
-  // Classify
-  const isClear   = code === 0 || code === 1;
-  const isPartly  = code === 2;
-  const isCloudy  = code === 3 || (code >= 45 && code <= 48);
-  const isRain    = (code >= 51 && code <= 67) || (code >= 80 && code <= 82);
-  const isSnow    = (code >= 71 && code <= 77) || (code >= 85 && code <= 86);
-  const isStorm   = code >= 95;
+  const isClear = code === 0 || code === 1;
+  const isPartly = code === 2;
+  const isCloudy = code === 3 || (code >= 45 && code <= 48);
+  const isRain = (code >= 51 && code <= 67) || (code >= 80 && code <= 82);
+  const isSnow = (code >= 71 && code <= 77) || (code >= 85 && code <= 86);
+  const isStorm = code >= 95;
 
-  // Sun glow (day + clear/partly)
-  if (isDay && (isClear || isPartly)) {
-    document.getElementById('sun-glow').classList.add('show');
-  }
+  if (isDay && (isClear || isPartly)) document.getElementById('sun-glow').classList.add('show');
 
-  // Stars (night + clear)
   if (!isDay && isClear) {
     const starsEl = document.getElementById('stars');
     for (let i = 0; i < 55; i++) {
@@ -626,7 +838,6 @@ function applyWeatherAnimation(code, isDay) {
     starsEl.classList.add('show');
   }
 
-  // Clouds
   const cloudCount = isStorm ? 7 : isRain || isSnow ? 5 : isCloudy ? 4 : isPartly ? 2 : 0;
   if (cloudCount > 0) {
     const cloudsEl = document.getElementById('clouds');
@@ -643,7 +854,6 @@ function applyWeatherAnimation(code, isDay) {
     }
   }
 
-  // Rain / snow particles
   if (isRain || isStorm) startParticles('rain');
   else if (isSnow) startParticles('snow');
 }
@@ -669,14 +879,8 @@ async function enableNotifications() {
     notifyEnabled = true;
     localStorage.setItem('weather_notify', 'on');
     updateNotifToggle();
-    try {
-      new Notification('CafeTab Weather', {
-        body: '🔔 Rain alerts are on. We\'ll notify you when rain is coming.'
-      });
-    } catch(e) {}
-  } else {
-    alert('Please allow notifications in your browser settings.');
-  }
+    try { new Notification('CafeTab Weather', { body: '🔔 Rain alerts are on.' }); } catch(e) {}
+  } else alert('Please allow notifications in your browser settings.');
 }
 function sendNotification(title, body) {
   if (!notifyEnabled || Notification.permission !== 'granted') return;
@@ -699,16 +903,12 @@ function isFavorite(city) {
 function toggleFavorite() {
   if (isFavorite(current)) favorites = favorites.filter(f => !(f.lat === current.lat && f.lon === current.lon));
   else favorites.push({ name: current.name, country: current.country, lat: current.lat, lon: current.lon });
-  saveFavorites();
-  renderFavorites();
-  updateSaveButton();
+  saveFavorites(); renderFavorites(); updateSaveButton();
 }
 function removeFavorite(lat, lon, e) {
   if (e) e.stopPropagation();
   favorites = favorites.filter(f => !(f.lat === lat && f.lon === lon));
-  saveFavorites();
-  renderFavorites();
-  updateSaveButton();
+  saveFavorites(); renderFavorites(); updateSaveButton();
 }
 function goToFavorite(fav) {
   current = { name: fav.name, country: fav.country, lat: fav.lat, lon: fav.lon };
@@ -730,25 +930,17 @@ function renderFavorites() {
 function updateSaveButton() {
   const btn = document.getElementById('save-btn');
   if (!btn) return;
-  if (isFavorite(current)) {
-    btn.classList.add('saved'); btn.textContent = '★'; btn.title = 'Remove from favorites';
-  } else {
-    btn.classList.remove('saved'); btn.textContent = '☆'; btn.title = 'Save to favorites';
-  }
+  if (isFavorite(current)) { btn.classList.add('saved'); btn.textContent = '★'; }
+  else { btn.classList.remove('saved'); btn.textContent = '☆'; }
 }
 
-// ==================== RAIN ALERT LOGIC ====================
+// ==================== RAIN ALERT ====================
 function analyzeRain(hourly, startIdx) {
   const next = [];
   for (let i = 0; i < 12; i++) {
     const idx = startIdx + i;
     if (idx >= hourly.time.length) break;
-    next.push({
-      i,
-      time: hourly.time[idx],
-      code: hourly.weather_code[idx],
-      rain: hourly.precipitation_probability[idx]
-    });
+    next.push({ i, time: hourly.time[idx], code: hourly.weather_code[idx], rain: hourly.precipitation_probability[idx] });
   }
   const rainEvent = next.find(h => h.rain >= 50 || (h.code >= 51 && h.code <= 67) || h.code >= 80);
   if (!rainEvent) return null;
@@ -758,21 +950,17 @@ function analyzeRain(hourly, startIdx) {
 function showRainAlert(info) {
   if (!info) { alertBanner.classList.remove('show', 'severe'); return; }
   const { event, severe } = info;
-
   let timeText;
   if (event.i === 0) timeText = 'right now';
   else if (event.i === 1) timeText = 'in about 1 hour';
   else timeText = `in about ${event.i} hours`;
-
   const desc = severe ? 'Thunderstorm' : (event.rain >= 70 ? 'Heavy rain' : 'Rain');
   alertIcon.textContent = severe ? '⛈️' : '🌧️';
   alertText.innerHTML = `<strong>${desc} expected ${timeText}</strong>${event.rain}% chance · ${weatherDesc(event.code)}`;
   alertBanner.classList.add('show');
   alertBanner.classList.toggle('severe', severe);
-
   if (notifyEnabled && Notification.permission === 'granted') alertEnable.style.display = 'none';
   else alertEnable.style.display = '';
-
   const key = `${current.lat},${current.lon},${event.time}`;
   if (notifyEnabled && Notification.permission === 'granted' && key !== lastNotifiedKey) {
     sendNotification(severe ? '⛈️ Thunderstorm incoming' : '🌧️ Rain incoming',
@@ -782,7 +970,7 @@ function showRainAlert(info) {
   }
 }
 
-// ==================== SUGGESTIONS ====================
+// ==================== SEARCH ====================
 let suggestTimer = null;
 input.addEventListener('input', () => {
   clearTimeout(suggestTimer);
@@ -851,7 +1039,6 @@ async function searchCity() {
 // ==================== WEATHER ====================
 async function loadWeather() {
   contentEl.innerHTML = '<div class="status">Loading weather…</div>';
-
   try {
     const url = `https://api.open-meteo.com/v1/forecast?latitude=${current.lat}&longitude=${current.lon}` +
       `&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m,is_day` +
@@ -917,7 +1104,7 @@ async function loadWeather() {
       <div class="location-row">
         <div class="location">📍 ${escapeHtml(current.name)}</div>
         <button class="save-btn ${isFavorite(current) ? 'saved' : ''}" id="save-btn"
-                onclick="toggleFavorite()" title="Save to favorites">${favStar}</button>
+                onclick="toggleFavorite()">${favStar}</button>
       </div>
       <div class="country-name">${escapeHtml(current.country || '')}</div>
       <div class="emoji">${emoji}</div>
@@ -939,10 +1126,20 @@ async function loadWeather() {
         <div class="section-title">7-DAY FORECAST</div>
         <div class="forecast-row">${forecastHtml}</div>
       </div>
+
+      <button class="map-btn" onclick="openMap()">
+        <span style="font-size:18px">🗺️</span> View Weather Map
+      </button>
     `;
 
     renderFavorites();
     showRainAlert(analyzeRain(h, startIdx));
+
+    if (map && document.getElementById('map-overlay').style.display === 'flex') {
+      updateMapMarker();
+      document.getElementById('map-title').textContent = `📍 ${current.name}`;
+      map.setView([current.lat, current.lon]);
+    }
   } catch (e) {
     console.error(e);
     contentEl.innerHTML = '<div class="error">❌ Could not load weather. Check your internet.</div>';
@@ -962,7 +1159,6 @@ function setBackground(code, isDay) {
   document.body.style.background = bg;
 }
 
-// ==================== WEATHER CODES ====================
 function weatherEmoji(code, isDay = true) {
   if (code === 0) return isDay ? '☀️' : '🌙';
   if (code <= 2) return isDay ? '🌤️' : '☁️';
@@ -990,7 +1186,6 @@ function weatherDesc(code) {
   return 'Unknown';
 }
 
-// ==================== HELPERS ====================
 function escapeHtml(s) {
   return String(s).replace(/[&<>"']/g, ch => ({
     '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
