@@ -24,7 +24,7 @@
       -webkit-backdrop-filter: blur(20px);
       border-radius: 24px;
       padding: 32px;
-      max-width: 440px;
+      max-width: 480px;
       width: 100%;
       box-shadow: 0 20px 60px rgba(0,0,0,0.4);
     }
@@ -65,7 +65,7 @@
     }
     .search button:hover { background: rgba(255,255,255,0.3); }
 
-    /* Suggestions dropdown */
+    /* Suggestions */
     .suggestions {
       position: absolute;
       top: 100%;
@@ -103,7 +103,7 @@
       margin-top: 2px;
     }
 
-    /* Weather content */
+    /* Current weather */
     .location {
       text-align: center;
       font-size: 20px;
@@ -114,45 +114,167 @@
       text-align: center;
       opacity: 0.65;
       font-size: 13px;
-      margin-bottom: 24px;
+      margin-bottom: 18px;
       letter-spacing: 0.5px;
     }
     .temp {
-      font-size: 96px;
+      font-size: 84px;
       font-weight: 200;
       text-align: center;
       line-height: 1;
       letter-spacing: -4px;
-      margin: 10px 0;
+      margin: 8px 0;
     }
     .emoji {
-      font-size: 68px;
+      font-size: 58px;
       text-align: center;
-      margin: 8px 0;
+      margin: 6px 0;
       line-height: 1;
     }
     .desc {
       text-align: center;
-      font-size: 18px;
+      font-size: 16px;
       opacity: 0.9;
-      margin-bottom: 24px;
+      margin-bottom: 18px;
     }
     .details {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 12px;
-      padding-top: 22px;
+      padding-top: 18px;
       border-top: 1px solid rgba(255,255,255,0.15);
     }
     .detail { font-size: 12px; opacity: 0.75; letter-spacing: 0.5px; }
     .detail strong {
       display: block;
-      font-size: 17px;
+      font-size: 16px;
       margin-top: 4px;
       opacity: 1;
       font-weight: 600;
       letter-spacing: 0;
     }
+
+    /* Section headers */
+    .section-title {
+      font-size: 12px;
+      opacity: 0.7;
+      letter-spacing: 1.5px;
+      text-align: center;
+      margin-bottom: 12px;
+      font-weight: 600;
+    }
+    .section {
+      margin-top: 22px;
+      padding-top: 20px;
+      border-top: 1px solid rgba(255,255,255,0.15);
+    }
+
+    /* Hourly forecast (horizontal scroll) */
+    .hourly-scroll {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      overflow-y: hidden;
+      padding-bottom: 6px;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255,255,255,0.3) transparent;
+    }
+    .hourly-scroll::-webkit-scrollbar {
+      height: 5px;
+    }
+    .hourly-scroll::-webkit-scrollbar-thumb {
+      background: rgba(255,255,255,0.3);
+      border-radius: 3px;
+    }
+    .hourly-scroll::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .hour-card {
+      flex: 0 0 auto;
+      width: 62px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 12px;
+      padding: 12px 4px;
+      text-align: center;
+      scroll-snap-align: start;
+      transition: background 0.2s;
+    }
+    .hour-card:hover { background: rgba(255,255,255,0.16); }
+    .hour-card.now {
+      background: rgba(255,255,255,0.2);
+      box-shadow: 0 0 0 1px rgba(255,255,255,0.3) inset;
+    }
+    .hour-label {
+      font-size: 11px;
+      opacity: 0.75;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+    }
+    .hour-card.now .hour-label { opacity: 1; }
+    .hour-emoji {
+      font-size: 20px;
+      margin: 6px 0;
+      line-height: 1;
+    }
+    .hour-temp {
+      font-size: 13px;
+      font-weight: 700;
+    }
+    .hour-rain {
+      font-size: 10px;
+      color: #8ecbff;
+      margin-top: 2px;
+      min-height: 12px;
+      font-weight: 600;
+    }
+
+    /* 7-day forecast */
+    .forecast-row {
+      display: flex;
+      gap: 6px;
+      justify-content: space-between;
+    }
+    .day-card {
+      flex: 1;
+      background: rgba(255,255,255,0.08);
+      border-radius: 12px;
+      padding: 12px 4px;
+      text-align: center;
+      transition: all 0.2s;
+      min-width: 0;
+    }
+    .day-card:hover {
+      background: rgba(255,255,255,0.16);
+      transform: translateY(-3px);
+    }
+    .day-card.today {
+      background: rgba(255,255,255,0.18);
+      box-shadow: 0 0 0 1px rgba(255,255,255,0.3) inset;
+    }
+    .day-name {
+      font-size: 11px;
+      opacity: 0.75;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
+    .day-emoji {
+      font-size: 22px;
+      margin: 6px 0;
+      line-height: 1;
+    }
+    .day-temps {
+      font-size: 12px;
+      margin-top: 4px;
+      line-height: 1.4;
+    }
+    .day-high { font-weight: 700; }
+    .day-low { opacity: 0.6; }
+
+    /* Status / errors */
     .status {
       text-align: center;
       opacity: 0.75;
@@ -166,21 +288,23 @@
       color: #ffb4b4;
     }
 
-    /* Responsive */
     @media (max-width: 480px) {
-      .card { padding: 24px; border-radius: 20px; }
-      .temp { font-size: 76px; }
-      .emoji { font-size: 56px; }
+      .card { padding: 22px 18px; border-radius: 20px; }
+      .temp { font-size: 68px; letter-spacing: -3px; }
+      .emoji { font-size: 48px; }
+      .forecast-row { gap: 4px; }
+      .day-card { padding: 10px 2px; border-radius: 10px; }
+      .day-emoji { font-size: 18px; }
+      .day-name { font-size: 9px; letter-spacing: 0.4px; }
+      .day-temps { font-size: 10px; }
+      .hour-card { width: 56px; }
     }
   </style>
 </head>
 <body>
   <div class="card">
     <div class="search">
-      <input
-        id="city-input"
-        placeholder="Search a city…"
-        autocomplete="off">
+      <input id="city-input" placeholder="Search a city…" autocomplete="off">
       <button onclick="searchCity()">🔍</button>
       <div class="suggestions" id="suggestions"></div>
     </div>
@@ -191,30 +315,21 @@
   </div>
 
 <script>
-// ---------- Element refs ----------
 const input = document.getElementById('city-input');
 const suggestionsEl = document.getElementById('suggestions');
 const contentEl = document.getElementById('content');
 
-// ---------- Default city (first launch) ----------
 const DEFAULT = { name: 'Addis Ababa', country: 'Ethiopia', lat: 9.03, lon: 38.74 };
-
-// ---------- Load last city or default ----------
 let current = loadSaved() || DEFAULT;
 
-// ---------- Suggestion debounce ----------
+// ---------- Suggestions ----------
 let suggestTimer = null;
-
 input.addEventListener('input', () => {
   clearTimeout(suggestTimer);
   const q = input.value.trim();
-  if (q.length < 2) {
-    suggestionsEl.classList.remove('show');
-    return;
-  }
+  if (q.length < 2) { suggestionsEl.classList.remove('show'); return; }
   suggestTimer = setTimeout(() => fetchSuggestions(q), 280);
 });
-
 input.addEventListener('keydown', (e) => {
   if (e.key === 'Enter') {
     if (suggestionsEl.classList.contains('show')) {
@@ -225,25 +340,21 @@ input.addEventListener('keydown', (e) => {
   }
   if (e.key === 'Escape') suggestionsEl.classList.remove('show');
 });
-
 document.addEventListener('click', (e) => {
   if (!e.target.closest('.search')) suggestionsEl.classList.remove('show');
 });
 
-// ---------- Fetch suggestions from Open-Meteo geocoding ----------
 async function fetchSuggestions(query) {
   try {
     const url = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(query)}&count=6&language=en&format=json`;
     const res = await fetch(url);
     const data = await res.json();
     const results = data.results || [];
-
     if (results.length === 0) {
       suggestionsEl.innerHTML = '<div class="suggestion">No matches found</div>';
       suggestionsEl.classList.add('show');
       return;
     }
-
     suggestionsEl.innerHTML = results.map(r => `
       <div class="suggestion" onclick='pickCity(${JSON.stringify(r).replace(/'/g, "&#39;")})'>
         <strong>${escapeHtml(r.name)}</strong>
@@ -252,12 +363,9 @@ async function fetchSuggestions(query) {
       </div>
     `).join('');
     suggestionsEl.classList.add('show');
-  } catch (e) {
-    console.error(e);
-  }
+  } catch (e) { console.error(e); }
 }
 
-// ---------- User picks a suggestion ----------
 function pickCity(place) {
   current = {
     name: place.name,
@@ -271,7 +379,6 @@ function pickCity(place) {
   loadWeather();
 }
 
-// ---------- Fallback search (uses Enter or 🔍 button) ----------
 async function searchCity() {
   const q = input.value.trim();
   if (!q) return;
@@ -279,30 +386,76 @@ async function searchCity() {
   const res = await fetch(url);
   const data = await res.json();
   const r = (data.results || [])[0];
-  if (!r) {
-    contentEl.innerHTML = '<div class="error">❌ City not found. Try another name.</div>';
-    return;
-  }
+  if (!r) { contentEl.innerHTML = '<div class="error">❌ City not found. Try another name.</div>'; return; }
   pickCity(r);
 }
 
-// ---------- Fetch & display weather ----------
+// ---------- Weather ----------
 async function loadWeather() {
   contentEl.innerHTML = '<div class="status">Loading weather…</div>';
 
   try {
     const url = `https://api.open-meteo.com/v1/forecast?latitude=${current.lat}&longitude=${current.lon}` +
-      `&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m,is_day`;
+      `&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m,is_day` +
+      `&hourly=temperature_2m,weather_code,precipitation_probability,is_day` +
+      `&daily=weather_code,temperature_2m_max,temperature_2m_min` +
+      `&timezone=auto&forecast_days=7`;
+
     const res = await fetch(url);
     const data = await res.json();
     const c = data.current;
+    const d = data.daily;
+    const h = data.hourly;
 
-    const code = c.weather_code;
-    const isDay = c.is_day === 1;
-    const emoji = weatherEmoji(code, isDay);
-    const desc = weatherDesc(code);
+    const emoji = weatherEmoji(c.weather_code, c.is_day === 1);
+    const desc = weatherDesc(c.weather_code);
 
-    setBackground(code, isDay);
+    setBackground(c.weather_code, c.is_day === 1);
+
+    // ---------- Hourly forecast (next 24 hours) ----------
+    // Find the index of the current hour
+    const nowHourPrefix = c.time.slice(0, 13); // "2024-01-15T14"
+    let startIdx = h.time.findIndex(t => t.startsWith(nowHourPrefix));
+    if (startIdx < 0) startIdx = 0;
+
+    const hourlyHtml = h.time.slice(startIdx, startIdx + 24).map((timeStr, i) => {
+      const idx = startIdx + i;
+      const isNow = i === 0;
+      const hour = timeStr.slice(11, 16); // "14:00"
+      const temp = Math.round(h.temperature_2m[idx]);
+      const code = h.weather_code[idx];
+      const isDay = h.is_day[idx] === 1;
+      const rain = h.precipitation_probability[idx];
+
+      return `
+        <div class="hour-card ${isNow ? 'now' : ''}">
+          <div class="hour-label">${isNow ? 'NOW' : hour}</div>
+          <div class="hour-emoji">${weatherEmoji(code, isDay)}</div>
+          <div class="hour-temp">${temp}°</div>
+          <div class="hour-rain">${rain > 0 ? rain + '%' : ''}</div>
+        </div>`;
+    }).join('');
+
+    // ---------- 7-day forecast ----------
+    const today = c.time.slice(0, 10); // "2024-01-15"
+    const forecastHtml = d.time.map((dateStr, i) => {
+      const date = new Date(dateStr + 'T12:00:00');
+      const isToday = dateStr === today;
+      const dayName = isToday ? 'Today' : date.toLocaleDateString('en-US', { weekday: 'short' });
+      const high = Math.round(d.temperature_2m_max[i]);
+      const low = Math.round(d.temperature_2m_min[i]);
+      const dayEmoji = weatherEmoji(d.weather_code[i], true);
+
+      return `
+        <div class="day-card ${isToday ? 'today' : ''}" title="${weatherDesc(d.weather_code[i])}">
+          <div class="day-name">${dayName}</div>
+          <div class="day-emoji">${dayEmoji}</div>
+          <div class="day-temps">
+            <span class="day-high">${high}°</span>
+            <span class="day-low">${low}°</span>
+          </div>
+        </div>`;
+    }).join('');
 
     contentEl.innerHTML = `
       <div class="location">📍 ${escapeHtml(current.name)}</div>
@@ -316,13 +469,28 @@ async function loadWeather() {
         <div class="detail">WIND<strong>${Math.round(c.wind_speed_10m)} km/h</strong></div>
         <div class="detail">UPDATED<strong>${new Date().toLocaleTimeString('en-US', {hour:'2-digit', minute:'2-digit'})}</strong></div>
       </div>
+
+      <div class="section">
+        <div class="section-title">HOURLY FORECAST</div>
+        <div class="hourly-scroll">
+          ${hourlyHtml}
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-title">7-DAY FORECAST</div>
+        <div class="forecast-row">
+          ${forecastHtml}
+        </div>
+      </div>
     `;
   } catch (e) {
+    console.error(e);
     contentEl.innerHTML = '<div class="error">❌ Could not load weather. Check your internet.</div>';
   }
 }
 
-// ---------- Dynamic background based on weather ----------
+// ---------- Backgrounds ----------
 function setBackground(code, isDay) {
   let bg;
   if (!isDay) {
@@ -343,7 +511,7 @@ function setBackground(code, isDay) {
   document.body.style.background = bg;
 }
 
-// ---------- Weather code → emoji ----------
+// ---------- Weather codes ----------
 function weatherEmoji(code, isDay = true) {
   if (code === 0) return isDay ? '☀️' : '🌙';
   if (code <= 2) return isDay ? '🌤️' : '☁️';
@@ -388,9 +556,8 @@ function loadSaved() {
 }
 
 // ---------- Start ----------
-input.value = '';
 loadWeather();
-setInterval(loadWeather, 10 * 60 * 1000); // refresh every 10 min
+setInterval(loadWeather, 10 * 60 * 1000);
 </script>
 </body>
 </html>
