@@ -325,7 +325,7 @@
       from { opacity: 0; transform: scale(0.98); }
       to { opacity: 1; transform: scale(1); }
     }
-    #map { flex: 1; position: relative; z-index: 1; background: #e8ecef; }
+    #map { flex: 1; position: relative; z-index: 1; }
 
     .map-topbar {
       position: absolute; top: 14px; left: 14px; right: 14px;
@@ -583,17 +583,13 @@ async function openMap() {
     map = L.map('map', {
       zoomControl: true,
       attributionControl: true,
-      zoomSnap: 0.5,
-      minZoom: 2,
-      maxZoom: 19
+      zoomSnap: 0.5
     }).setView([current.lat, current.lon], 8);
 
     // Keyless light-gray basemap (Esri)
-    // maxNativeZoom: real tiles only exist up to 16; Leaflet will upscale past that
     L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
       attribution: 'Tiles © Esri — Esri, DeLorme, NAVTEQ',
-      maxNativeZoom: 16,
-      maxZoom: 19
+      maxZoom: 16
     }).addTo(map);
 
     // Load radar frames
@@ -654,13 +650,7 @@ function updateRadarFrame() {
   if (radarLayer) {
     radarLayer.setUrl(url);
   } else if (radarOn) {
-    // RainViewer tiles only go to zoom 12 — upscale beyond that
-    radarLayer = L.tileLayer(url, {
-      opacity: 0.7,
-      tileSize: 256,
-      maxNativeZoom: 12,
-      maxZoom: 19
-    }).addTo(map);
+    radarLayer = L.tileLayer(url, { opacity: 0.7, tileSize: 256 }).addTo(map);
   }
 
   const time = new Date(frame.time * 1000);
